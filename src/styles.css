@@ -158,12 +158,12 @@ input:focus, select:focus, textarea:focus {
   box-shadow: var(--shadow);
   margin-bottom: 12px;
 }
-.inline-create { grid-template-columns: minmax(220px, .8fr) minmax(320px, 1.3fr) auto; align-items: center; }
+.inline-create { grid-template-columns: minmax(200px, .8fr) minmax(260px, 1.3fr) auto; align-items: center; }
 .filter-bar { grid-template-columns: repeat(3, minmax(160px, 1fr)); box-shadow: none; }
 
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 12px;
 }
 .project-card {
