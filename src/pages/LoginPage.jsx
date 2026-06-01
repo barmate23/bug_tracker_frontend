@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext.jsx';
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   async function submit(event) {
@@ -25,8 +25,8 @@ export default function LoginPage() {
       <form className="login-card" onSubmit={submit}>
         <div className="brand login-brand"><span className="brand-mark">B</span>Bug Tracker</div>
         <h1>Sign in to your bug tracker</h1>
-        <label>Username<input value={username} onChange={(e) => setUsername(e.target.value)} /></label>
-        <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>
+        <label>Username<input autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} /></label>
+        <label>Password<input autoComplete="current-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>
         {error && <p className="error-text">{error}</p>}
         <button className="primary-button">Login</button>
       </form>
