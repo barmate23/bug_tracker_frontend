@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react';
+import { Check, Edit2, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import Navbar from '../components/Navbar.jsx';
@@ -11,6 +11,8 @@ export default function AdminPage() {
   const [projectUsers, setProjectUsers] = useState([]);
   const [newUser, setNewUser] = useState({ fullName: '', username: '', password: '', role: 'DEV' });
   const [assignUserId, setAssignUserId] = useState('');
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editUser, setEditUser] = useState({ fullName: '', username: '', password: '', role: 'DEV' });
 
   async function load() {
     const [usersRes, projectsRes] = await Promise.all([api.get('/users'), api.get('/projects')]);
@@ -48,6 +50,23 @@ export default function AdminPage() {
     loadProjectUsers();
   }
 
+  function startEdit(user) {
+    setEditingUserId(user.userId);
+    setEditUser({
+      fullName: user.fullName,
+      username: user.username,
+      password: user.password,
+      role: user.role
+    });
+  }
+
+  async function saveUser(userId) {
+    await api.put(`/users/${userId}`, editUser);
+    setEditingUserId(null);
+    await load();
+    await loadProjectUsers();
+  }
+
   return (
     <>
       <Navbar />
@@ -66,14 +85,27 @@ export default function AdminPage() {
           <section className="admin-grid">
             <div className="table-card">
               <table>
-                <thead><tr><th>Name</th><th>Username</th><th>Password</th><th>Role</th></tr></thead>
+                <thead><tr><th>Name</th><th>Username</th><th>Password</th><th>Role</th><th>Actions</th></tr></thead>
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.userId}>
-                      <td>{user.fullName}</td>
-                      <td>{user.username}</td>
-                      <td><code className="password-cell">{user.password}</code></td>
-                      <td>{user.role}</td>
+                      {editingUserId === user.userId ? (
+                        <>
+                          <td><input className="table-input" value={editUser.fullName} onChange={(e) => setEditUser({ ...editUser, fullName: e.target.value })} /></td>
+                          <td><input className="table-input" value={editUser.username} onChange={(e) => setEditUser({ ...editUser, username: e.target.value })} /></td>
+                          <td><input className="table-input" value={editUser.password} onChange={(e) => setEditUser({ ...editUser, password: e.target.value })} /></td>
+                          <td><select className="table-input" value={editUser.role} onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}><option>ADMIN</option><option>DEV</option><option>TESTER</option></select></td>
+                          <td><div className="row-actions"><button className="mini-button primary-mini" onClick={() => saveUser(user.userId)} type="button"><Check size={13} /> Save</button><button className="mini-button" onClick={() => setEditingUserId(null)} type="button"><X size={13} /> Cancel</button></div></td>
+                        </>
+                      ) : (
+                        <>
+                          <td>{user.fullName}</td>
+                          <td>{user.username}</td>
+                          <td><code className="password-cell">{user.password}</code></td>
+                          <td>{user.role}</td>
+                          <td><button className="mini-button" onClick={() => startEdit(user)} type="button"><Edit2 size={13} /> Edit</button></td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -94,7 +126,7 @@ export default function AdminPage() {
               <label>Project<select value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)}>{projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
               <div className="assigned-list">
                 {projectUsers.map((user) => (
-                  <div className="assigned-row" key={user.userId}><span>{user.fullName}<small>{user.role}</small></span><button className="icon-button" onClick={() => removeUser(user.userId)}><X size={16} /></button></div>
+                  <div className="assigned-row" key={user.userId}><span>{user.fullName}<small>{user.role}</small></span><button className="mini-button danger-mini" onClick={() => removeUser(user.userId)} type="button"><X size={13} /> Remove Access</button></div>
                 ))}
               </div>
             </div>
