@@ -6,7 +6,7 @@ pipeline {
     CONTAINER_NAME = 'bug-tracker-frontend'
     DOCKER_NETWORK = 'updated_orgadmin_rmscadminnetwork'
     VITE_API_BASE_URL = 'https://bugtrackerbackend.sarvosmi.io'
-    DOCKER_BUILDKIT = '1'
+    DOCKER_BUILDKIT = '0'
   }
 
   stages {
