@@ -5,7 +5,7 @@ pipeline {
     IMAGE_NAME = 'bug-tracker-frontend'
     CONTAINER_NAME = 'bug-tracker-frontend'
     DOCKER_NETWORK = 'updated_orgadmin_rmscadminnetwork'
-    VITE_API_BASE_URL = 'http://localhost:8080'
+    VITE_API_BASE_URL = ''
   }
 
   stages {
