@@ -17,30 +17,27 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        sh 'docker build --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL -t $IMAGE_NAME:latest .'
+        sh 'docker build --no-cache --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL -t $IMAGE_NAME:latest .'
       }
     }
 
     stage('Deploy') {
       steps {
-        sh '''
-          docker network inspect "$DOCKER_NETWORK" >/dev/null
-          docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
-          docker run -d \
-            --name "$CONTAINER_NAME" \
-            --restart unless-stopped \
-            --network "$DOCKER_NETWORK" \
-            --add-host=host.docker.internal:host-gateway \
-            -p 3000:80 \
-            "$IMAGE_NAME:latest"
-        '''
+        sh 'docker-compose down || true'
+        sh 'docker-compose up -d'
       }
     }
   }
 
   post {
     always {
-      sh 'docker image ls $IMAGE_NAME:latest || true'
+      cleanWs()
+    }
+    success {
+      echo 'Frontend deployment successful!'
+    }
+    failure {
+      echo 'Frontend deployment failed. Please check the logs.'
     }
   }
 }
