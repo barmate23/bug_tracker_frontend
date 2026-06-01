@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
@@ -57,6 +57,18 @@ export default function BugListPage() {
     }
   }
 
+  async function deleteBug(bug) {
+    if (!window.confirm(`Delete bug #${bug.id} "${bug.title}"?`)) return;
+    const previous = bugs;
+    setBugs((current) => current.filter((item) => item.id !== bug.id));
+    try {
+      await api.delete(`/bugs/${bug.id}`);
+    } catch (error) {
+      setBugs(previous);
+      alert(error.message);
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -100,7 +112,14 @@ export default function BugListPage() {
                   </td>
                   <td>{bug.assignedTo?.fullName || 'Unassigned'}</td>
                   <td>{new Date(bug.createdAt).toLocaleDateString()}</td>
-                  <td><Link className="table-link" to={`/bugs/${bug.id}`}>View</Link></td>
+                  <td>
+                    <div className="row-actions">
+                      <Link className="mini-button" to={`/bugs/${bug.id}`}>Edit</Link>
+                      <button className="mini-button danger-mini" type="button" onClick={() => deleteBug(bug)}>
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

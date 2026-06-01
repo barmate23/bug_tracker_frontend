@@ -401,6 +401,11 @@ tbody tr:hover { background: #f8faff; }
   background: #fff;
 }
 .attachment-tile:hover { border-color: var(--line-strong); background: var(--surface-soft); }
+.attachment-tile a {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
 .attachment-tile img {
   width: 100%;
   aspect-ratio: 16 / 10;

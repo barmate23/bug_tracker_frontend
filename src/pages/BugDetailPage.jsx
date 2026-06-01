@@ -1,4 +1,4 @@
-import { Save } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { API_BASE_URL, api } from '../api/client.js';
@@ -61,6 +61,18 @@ export default function BugDetailPage() {
     load();
   }
 
+  async function deleteImage(attachment) {
+    if (!window.confirm(`Delete image "${attachment.fileName}"?`)) return;
+    const previous = attachments;
+    setAttachments((current) => current.filter((item) => item.id !== attachment.id));
+    try {
+      await api.delete(`/bugs/${id}/attachments/${attachment.id}`);
+    } catch (error) {
+      setAttachments(previous);
+      alert(error.message);
+    }
+  }
+
   if (!bug || !draft) return <><Navbar /><div className="screen-center">Loading bug...</div></>;
 
   return (
@@ -97,10 +109,15 @@ export default function BugDetailPage() {
           {attachments.length > 0 ? (
             <div className="attachment-grid">
               {attachments.map((attachment) => (
-                <a className="attachment-tile" key={attachment.id} href={`${API_BASE_URL}${attachment.url}`} target="_blank" rel="noreferrer">
-                  <img src={`${API_BASE_URL}${attachment.url}`} alt={attachment.fileName} />
-                  <span>{attachment.fileName}</span>
-                </a>
+                <div className="attachment-tile" key={attachment.id}>
+                  <a href={`${API_BASE_URL}${attachment.url}`} target="_blank" rel="noreferrer">
+                    <img src={`${API_BASE_URL}${attachment.url}`} alt={attachment.fileName} />
+                    <span>{attachment.fileName}</span>
+                  </a>
+                  <button className="mini-button danger-mini" type="button" onClick={() => deleteImage(attachment)}>
+                    <Trash2 size={13} /> Delete
+                  </button>
+                </div>
               ))}
             </div>
           ) : (
