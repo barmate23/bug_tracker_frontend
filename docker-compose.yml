@@ -6,7 +6,9 @@ services:
     ports:
       - "3000:80"
     networks:
-      - app_network
+      app_network:
+        aliases:
+          - bug-tracker-frontend
 
 networks:
   app_network:
