@@ -6,6 +6,14 @@ import BugModal from '../components/BugModal.jsx';
 import { PriorityChip } from '../components/Chips.jsx';
 import Navbar from '../components/Navbar.jsx';
 
+const STATUS_OPTIONS = [
+  ['OPEN', 'Open'],
+  ['IN_PROGRESS', 'In Progress'],
+  ['HOLD', 'Hold'],
+  ['RESOLVED', 'Resolved'],
+  ['CLOSED', 'Closed']
+];
+
 export default function BugListPage() {
   const { id } = useParams();
   const [bugs, setBugs] = useState([]);
@@ -38,7 +46,7 @@ export default function BugListPage() {
       return api.post(`/bugs/${res.data.id}/attachments`, data);
     }));
     setModalOpen(false);
-    load();
+    await load();
   }
 
   async function updateStatus(bug, status) {
@@ -81,7 +89,10 @@ export default function BugListPage() {
           <button className="primary-button" onClick={() => setModalOpen(true)}><Plus size={15} /> Report Bug</button>
         </section>
         <div className="filter-bar">
-          <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}><option value="">All statuses</option><option value="OPEN">Open</option><option value="IN_PROGRESS">In Progress</option><option value="RESOLVED">Resolved</option><option value="CLOSED">Closed</option></select>
+          <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
+            <option value="">All statuses</option>
+            {STATUS_OPTIONS.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
+          </select>
           <select value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })}><option value="">All priorities</option><option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select>
           <select value={filters.assignee} onChange={(e) => setFilters({ ...filters, assignee: e.target.value })}><option value="">All assignees</option>{users.map((u) => <option key={u.userId} value={u.userId}>{u.fullName}</option>)}</select>
         </div>
@@ -102,10 +113,7 @@ export default function BugListPage() {
                         value={bug.status}
                         onChange={(e) => updateStatus(bug, e.target.value)}
                       >
-                        <option value="OPEN">Open</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="CLOSED">Closed</option>
+                        {STATUS_OPTIONS.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
                       </select>
                       <span>Update</span>
                     </div>

@@ -11,9 +11,23 @@ export default function BugModal({ users, onClose, onSubmit }) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  function addImages(files) {
+    setImages((current) => [...current, ...files]);
+  }
+
+  function pasteImages(event) {
+    const files = Array.from(event.clipboardData?.items || [])
+      .filter((item) => item.kind === 'file' && item.type.startsWith('image/'))
+      .map((item) => item.getAsFile())
+      .filter(Boolean);
+    if (!files.length) return;
+    event.preventDefault();
+    addImages(files);
+  }
+
   return (
     <div className="overlay">
-      <form className="drawer" onSubmit={(e) => { e.preventDefault(); if (canSubmit) onSubmit({ bug: { ...form, assignedTo: form.assignedTo ? Number(form.assignedTo) : null }, images }); }}>
+      <form className="drawer" onPaste={pasteImages} onSubmit={(e) => { e.preventDefault(); if (canSubmit) onSubmit({ bug: { ...form, assignedTo: form.assignedTo ? Number(form.assignedTo) : null }, images }); }}>
         <div className="drawer-head">
           <div>
             <h2>Report Bug</h2>
@@ -24,8 +38,9 @@ export default function BugModal({ users, onClose, onSubmit }) {
         <label>Title<input value={form.title} onChange={(e) => update('title', e.target.value)} autoFocus /></label>
         <label>Description<VoiceInput value={form.description} onChange={(value) => update('description', value)} /></label>
         <label>Images
-          <input type="file" accept="image/*" multiple onChange={(e) => setImages(Array.from(e.target.files || []))} />
+          <input type="file" accept="image/*" multiple onChange={(e) => addImages(Array.from(e.target.files || []))} />
         </label>
+        <p className="field-note">Paste screenshots with Ctrl + V to attach them.</p>
         {images.length > 0 && (
           <div className="upload-list">
             {images.map((file) => <span key={`${file.name}-${file.size}`}>{file.name}</span>)}

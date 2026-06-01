@@ -1,13 +1,16 @@
 import { Save, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { API_BASE_URL, api } from '../api/client.js';
 import { PriorityChip, StatusChip } from '../components/Chips.jsx';
 import Navbar from '../components/Navbar.jsx';
 import VoiceInput from '../components/VoiceInput.jsx';
 
+const STATUS_OPTIONS = ['OPEN', 'IN_PROGRESS', 'HOLD', 'RESOLVED', 'CLOSED'];
+
 export default function BugDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [bug, setBug] = useState(null);
   const [users, setUsers] = useState([]);
   const [comments, setComments] = useState([]);
@@ -38,8 +41,8 @@ export default function BugDetailPage() {
   useEffect(() => { load(); }, [id]);
 
   async function save() {
-    await api.put(`/bugs/${id}`, { ...draft, assignedTo: draft.assignedTo ? Number(draft.assignedTo) : null });
-    load();
+    const res = await api.put(`/bugs/${id}`, { ...draft, assignedTo: draft.assignedTo ? Number(draft.assignedTo) : null });
+    navigate(`/projects/${res.data.projectId}/bugs`);
   }
 
   async function addComment(event) {
@@ -47,18 +50,31 @@ export default function BugDetailPage() {
     if (!message.trim()) return;
     await api.post(`/bugs/${id}/comments`, { message });
     setMessage('');
-    load();
+    navigate(`/projects/${bug.projectId}/bugs`);
   }
 
-  async function uploadImages(event) {
-    const files = Array.from(event.target.files || []);
+  async function uploadFiles(files) {
     await Promise.all(files.map((file) => {
       const data = new FormData();
       data.append('file', file);
       return api.post(`/bugs/${id}/attachments`, data);
     }));
+    await load();
+  }
+
+  async function uploadImages(event) {
+    await uploadFiles(Array.from(event.target.files || []));
     event.target.value = '';
-    load();
+  }
+
+  async function pasteImages(event) {
+    const files = Array.from(event.clipboardData?.items || [])
+      .filter((item) => item.kind === 'file' && item.type.startsWith('image/'))
+      .map((item) => item.getAsFile())
+      .filter(Boolean);
+    if (!files.length) return;
+    event.preventDefault();
+    await uploadFiles(files);
   }
 
   async function deleteImage(attachment) {
@@ -85,7 +101,7 @@ export default function BugDetailPage() {
             <input className="title-input" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
             <label>Description<VoiceInput value={draft.description} onChange={(value) => setDraft({ ...draft, description: value })} rows={8} /></label>
             <div className="form-grid three">
-              <label>Status<select value={draft.status} onChange={(e) => setDraft({ ...draft, status: e.target.value })}><option>OPEN</option><option>IN_PROGRESS</option><option>RESOLVED</option><option>CLOSED</option></select></label>
+              <label>Status<select value={draft.status} onChange={(e) => setDraft({ ...draft, status: e.target.value })}>{STATUS_OPTIONS.map((status) => <option key={status}>{status}</option>)}</select></label>
               <label>Priority<select value={draft.priority} onChange={(e) => setDraft({ ...draft, priority: e.target.value })}><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label>
               <label>Assigned to<select value={draft.assignedTo} onChange={(e) => setDraft({ ...draft, assignedTo: e.target.value })}><option value="">Unassigned</option>{users.map((u) => <option key={u.userId} value={u.userId}>{u.fullName}</option>)}</select></label>
             </div>
@@ -101,11 +117,12 @@ export default function BugDetailPage() {
             <Link className="table-link" to={`/projects/${bug.projectId}/bugs`}>{bug.projectName}</Link>
           </aside>
         </div>
-        <section className="comments">
+        <section className="comments" onPaste={pasteImages}>
           <div className="section-title-row">
             <h2>Images</h2>
             <label className="file-action">Upload images<input type="file" accept="image/*" multiple onChange={uploadImages} /></label>
           </div>
+          <div className="field-note">Paste images here with Ctrl + V to upload screenshots.</div>
           {attachments.length > 0 ? (
             <div className="attachment-grid">
               {attachments.map((attachment) => (

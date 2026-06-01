@@ -232,6 +232,7 @@ tbody tr:hover { background: #f8faff; }
 .priority-low { background: #ebecf0; color: #42526e; }
 .status-open { background: #deebff; color: #0747a6; }
 .status-in_progress { background: #eae6ff; color: #403294; }
+.status-hold { background: #fff7d6; color: #7a4d00; }
 .status-resolved { background: #e3fcef; color: #006644; }
 .status-closed { background: #ebecf0; color: #42526e; }
 .status-edit {
