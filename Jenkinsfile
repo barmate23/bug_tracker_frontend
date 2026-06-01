@@ -6,6 +6,7 @@ pipeline {
     CONTAINER_NAME = 'bug-tracker-frontend'
     DOCKER_NETWORK = 'updated_orgadmin_rmscadminnetwork'
     VITE_API_BASE_URL = 'https://bugtrackerbackend.sarvosmi.io'
+    DOCKER_BUILDKIT = '1'
   }
 
   stages {
@@ -17,7 +18,7 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        sh 'docker build --no-cache --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL -t $IMAGE_NAME:latest .'
+        sh 'docker build --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL -t $IMAGE_NAME:latest .'
       }
     }
 
