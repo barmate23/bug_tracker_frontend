@@ -30,6 +30,7 @@ pipeline {
             --name "$CONTAINER_NAME" \
             --restart unless-stopped \
             --network "$DOCKER_NETWORK" \
+            --add-host=host.docker.internal:host-gateway \
             -p 3000:80 \
             "$IMAGE_NAME:latest"
         '''
