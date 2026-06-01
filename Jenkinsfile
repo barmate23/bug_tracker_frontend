@@ -15,13 +15,6 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      steps {
-        sh 'npm ci'
-        sh 'npm run build'
-      }
-    }
-
     stage('Docker Build') {
       steps {
         sh 'docker build --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL -t $IMAGE_NAME:latest .'
@@ -46,7 +39,7 @@ pipeline {
 
   post {
     always {
-      archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+      sh 'docker image ls $IMAGE_NAME:latest || true'
     }
   }
 }
