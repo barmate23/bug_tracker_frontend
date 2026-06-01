@@ -269,22 +269,48 @@ tbody tr:hover { background: #f8faff; }
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(9, 30, 66, .5);
+  background: rgba(9, 30, 66, .58);
+  backdrop-filter: blur(6px);
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
   z-index: 30;
 }
 .drawer {
-  width: min(460px, 100vw);
-  min-height: 100%;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: auto;
   background: #fff;
-  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, .72);
+  border-radius: 12px;
+  padding: 0;
   display: grid;
   align-content: start;
-  gap: 14px;
-  box-shadow: var(--shadow-lg);
+  gap: 16px;
+  box-shadow: 0 24px 64px rgba(9, 30, 66, .28);
 }
-.drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.drawer > label,
+.drawer > .form-grid,
+.drawer > .upload-list,
+.drawer > .field-note,
+.drawer > .primary-button {
+  margin-left: 22px;
+  margin-right: 22px;
+}
+.drawer > .primary-button {
+  min-height: 40px;
+  margin-bottom: 22px;
+}
+.drawer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+}
 .drawer h2, .side-form h2, .comments h2, .sidebar h2 {
   margin: 0;
   color: var(--heading);
@@ -292,6 +318,11 @@ tbody tr:hover { background: #f8faff; }
   line-height: 1.2;
 }
 .drawer p { margin: 4px 0 0; color: var(--muted); line-height: 1.38; font-size: 13px; }
+.drawer input[type="file"] {
+  border-style: dashed;
+  background: var(--surface-soft);
+  cursor: pointer;
+}
 .textarea-wrap { position: relative; }
 .textarea-wrap textarea { padding-right: 48px; min-height: 118px; }
 .mic-button {
