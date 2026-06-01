@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { isAdmin, useAuth } from '../context/AuthContext.jsx';
 
 export function PrivateRoute() {
   const { user, checking } = useAuth();
@@ -9,5 +9,5 @@ export function PrivateRoute() {
 
 export function AdminRoute() {
   const { user } = useAuth();
-  return user?.role === 'ADMIN' ? <Outlet /> : <Navigate to="/projects" replace />;
+  return isAdmin(user) ? <Outlet /> : <Navigate to="/projects" replace />;
 }
