@@ -24,9 +24,16 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        sh 'docker-compose down || true'
         sh 'docker rm -f $CONTAINER_NAME || true'
-        sh 'docker-compose up -d'
+        sh '''
+          docker run -d \
+            --name $CONTAINER_NAME \
+            --restart unless-stopped \
+            --network $DOCKER_NETWORK \
+            --network-alias $CONTAINER_NAME \
+            -p 3000:80 \
+            $IMAGE_NAME:latest
+        '''
       }
     }
   }
