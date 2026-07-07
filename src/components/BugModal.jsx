@@ -3,7 +3,7 @@ import { useState } from 'react';
 import VoiceInput from './VoiceInput.jsx';
 
 export default function BugModal({ users, onClose, onSubmit }) {
-  const [form, setForm] = useState({ title: '', description: '', priority: 'MEDIUM', assignedTo: '' });
+  const [form, setForm] = useState({ title: '', description: '', priority: 'MEDIUM', bugType: 'FRONTEND', assignedTo: '' });
   const [images, setImages] = useState([]);
   const canSubmit = form.title.trim() && form.description.trim();
 
@@ -46,8 +46,9 @@ export default function BugModal({ users, onClose, onSubmit }) {
             {images.map((file) => <span key={`${file.name}-${file.size}`}>{file.name}</span>)}
           </div>
         )}
-        <div className="form-grid">
+        <div className="form-grid three">
           <label>Priority<select value={form.priority} onChange={(e) => update('priority', e.target.value)}><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label>
+          <label>Bug Type<select value={form.bugType} onChange={(e) => update('bugType', e.target.value)}><option value="FRONTEND">Frontend</option><option value="BACKEND">Backend</option></select></label>
           <label>Assign To<select value={form.assignedTo} onChange={(e) => update('assignedTo', e.target.value)}><option value="">Unassigned</option>{users.map((u) => <option key={u.userId} value={u.userId}>{u.fullName}</option>)}</select></label>
         </div>
         <button className="primary-button" disabled={!canSubmit}>Submit Bug</button>

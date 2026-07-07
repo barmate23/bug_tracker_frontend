@@ -159,7 +159,7 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 12px;
 }
 .inline-create { grid-template-columns: minmax(200px, .8fr) minmax(260px, 1.3fr) auto; align-items: center; }
-.filter-bar { grid-template-columns: repeat(3, minmax(160px, 1fr)); box-shadow: none; }
+.filter-bar { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); box-shadow: none; }
 
 .project-grid {
   display: grid;
@@ -235,6 +235,8 @@ tbody tr:hover { background: #f8faff; }
 .status-hold { background: #fff7d6; color: #7a4d00; }
 .status-resolved { background: #e3fcef; color: #006644; }
 .status-closed { background: #ebecf0; color: #42526e; }
+.type-frontend { background: #e6f4ff; color: #0958d9; }
+.type-backend { background: #f9f0ff; color: #531dab; }
 .status-edit {
   display: inline-flex;
   align-items: center;

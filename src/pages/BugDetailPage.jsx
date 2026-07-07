@@ -2,7 +2,7 @@ import { Save, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { API_BASE_URL, api } from '../api/client.js';
-import { PriorityChip, StatusChip } from '../components/Chips.jsx';
+import { PriorityChip, StatusChip, BugTypeChip } from '../components/Chips.jsx';
 import Navbar from '../components/Navbar.jsx';
 import VoiceInput from '../components/VoiceInput.jsx';
 
@@ -31,6 +31,7 @@ export default function BugDetailPage() {
       description: bugRes.data.description,
       status: bugRes.data.status,
       priority: bugRes.data.priority,
+      bugType: bugRes.data.bugType,
       assignedTo: bugRes.data.assignedTo?.userId || ''
     });
     setUsers(usersRes.data);
@@ -100,9 +101,10 @@ export default function BugDetailPage() {
           <section className="detail-main">
             <input className="title-input" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
             <label>Description<VoiceInput value={draft.description} onChange={(value) => setDraft({ ...draft, description: value })} rows={8} /></label>
-            <div className="form-grid three">
+            <div className="form-grid">
               <label>Status<select value={draft.status} onChange={(e) => setDraft({ ...draft, status: e.target.value })}>{STATUS_OPTIONS.map((status) => <option key={status}>{status}</option>)}</select></label>
               <label>Priority<select value={draft.priority} onChange={(e) => setDraft({ ...draft, priority: e.target.value })}><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label>
+              <label>Bug Type<select value={draft.bugType} onChange={(e) => setDraft({ ...draft, bugType: e.target.value })}><option value="FRONTEND">Frontend</option><option value="BACKEND">Backend</option></select></label>
               <label>Assigned to<select value={draft.assignedTo} onChange={(e) => setDraft({ ...draft, assignedTo: e.target.value })}><option value="">Unassigned</option>{users.map((u) => <option key={u.userId} value={u.userId}>{u.fullName}</option>)}</select></label>
             </div>
             <button className="primary-button" onClick={save}><Save size={16} /> Save Changes</button>
@@ -111,6 +113,7 @@ export default function BugDetailPage() {
             <h2>Bug #{bug.id}</h2>
             <div className="meta-row"><span>Status</span><StatusChip value={bug.status} /></div>
             <div className="meta-row"><span>Priority</span><PriorityChip value={bug.priority} /></div>
+            <div className="meta-row"><span>Type</span><BugTypeChip value={bug.bugType} /></div>
             <div className="meta-row"><span>Reporter</span><strong>{bug.createdBy.fullName}</strong></div>
             <div className="meta-row"><span>Created</span><strong>{new Date(bug.createdAt).toLocaleString()}</strong></div>
             <div className="meta-row"><span>Updated</span><strong>{new Date(bug.updatedAt).toLocaleString()}</strong></div>

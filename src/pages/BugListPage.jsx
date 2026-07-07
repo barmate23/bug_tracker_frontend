@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import BugModal from '../components/BugModal.jsx';
-import { PriorityChip } from '../components/Chips.jsx';
+import { PriorityChip, BugTypeChip } from '../components/Chips.jsx';
 import Navbar from '../components/Navbar.jsx';
 
 const STATUS_OPTIONS = [
@@ -19,7 +19,7 @@ export default function BugListPage() {
   const [bugs, setBugs] = useState([]);
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
-  const [filters, setFilters] = useState({ status: '', priority: '', assignee: '' });
+  const [filters, setFilters] = useState({ status: '', priority: '', bugType: '', assignee: '' });
   const [modalOpen, setModalOpen] = useState(false);
 
   const project = useMemo(() => projects.find((item) => String(item.id) === id), [projects, id]);
@@ -36,7 +36,7 @@ export default function BugListPage() {
     setProjects(projectsRes.data);
   }
 
-  useEffect(() => { load(); }, [id, filters.status, filters.priority, filters.assignee]);
+  useEffect(() => { load(); }, [id, filters.status, filters.priority, filters.bugType, filters.assignee]);
 
   async function createBug(payload) {
     const res = await api.post(`/projects/${id}/bugs`, payload.bug);
@@ -94,16 +94,18 @@ export default function BugListPage() {
             {STATUS_OPTIONS.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
           </select>
           <select value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })}><option value="">All priorities</option><option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select>
+          <select value={filters.bugType} onChange={(e) => setFilters({ ...filters, bugType: e.target.value })}><option value="">All types</option><option value="FRONTEND">Frontend</option><option value="BACKEND">Backend</option></select>
           <select value={filters.assignee} onChange={(e) => setFilters({ ...filters, assignee: e.target.value })}><option value="">All assignees</option>{users.map((u) => <option key={u.userId} value={u.userId}>{u.fullName}</option>)}</select>
         </div>
         <div className="table-card">
           <table>
-            <thead><tr><th>#ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Assigned to</th><th>Created at</th><th>Actions</th></tr></thead>
+            <thead><tr><th>#ID</th><th>Title</th><th>Type</th><th>Priority</th><th>Status</th><th>Assigned to</th><th>Created at</th><th>Actions</th></tr></thead>
             <tbody>
               {bugs.map((bug) => (
                 <tr key={bug.id}>
                   <td>#{bug.id}</td>
                   <td className="title-cell">{bug.title}</td>
+                  <td><BugTypeChip value={bug.bugType} /></td>
                   <td><PriorityChip value={bug.priority} /></td>
                   <td>
                     <div className="status-edit">
